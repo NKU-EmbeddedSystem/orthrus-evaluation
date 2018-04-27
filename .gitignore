@@ -1,0 +1,4 @@
+*.log
+*.conf
+*.config
+*.gen.dat
