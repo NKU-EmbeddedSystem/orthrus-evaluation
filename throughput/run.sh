@@ -21,10 +21,10 @@ chsched sdb noop
 
 # array=( noop deadline ortddl ortcfq )
 # array=( ortddl )
-array=(1 2 4 8)
+array=(2)
 # in s
-test_duration=$((60))
-param="-m 0 -l $test_duration -s 1 -u 1 -q 1"
+test_duration=$((30))
+param="-m 0 -l $test_duration -s 1 -u 1 -q 1 -o 1"
 echo $param > data.config
 VM_SSH_PARAM="-oStrictHostKeyChecking=no darfux@192.168.122.1"
 
@@ -37,13 +37,15 @@ for (( i = 0; i < 8; i++ )); do
   ssh $VM_SSH_PARAM$i " echo ok"
 done
 
+sleep 5
+
 
 for num in "${array[@]}"
 do
   mkdir -p $num
   echo "testing $num threads"
   for (( i = 0; i < $num; i++ )); do
-    ssh $VM_SSH_PARAM$i " sleep 1; $TEST_TOOL $param -d /home/darfux/ort_test/test1 | tee $(pwd)/$num/$i.log" &
+    ssh $VM_SSH_PARAM$i " sleep 1; $TEST_TOOL $param -d /home/darfux/ort_test/test1 > $(pwd)/$num/$i.log" &
   done
 
   sleep $(($test_duration+5))

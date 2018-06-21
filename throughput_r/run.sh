@@ -21,10 +21,10 @@ chsched sdb noop
 
 # array=( noop deadline ortddl ortcfq )
 # array=( ortddl )
-array=(2)
+array=(4)
 # in s
-test_duration=$((30))
-param="-m 0 -l $test_duration -s 1 -u 1 -q 1 -o 0"
+test_duration=$((60))
+param="-m 0 -l $test_duration -s 1 -u 1 -q 1 -w 0 -o 1"
 echo $param > data.config
 VM_SSH_PARAM="-oStrictHostKeyChecking=no darfux@192.168.122.1"
 

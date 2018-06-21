@@ -36,6 +36,7 @@ struct io_opt{
   bool usebase;
   bool quiet;
   int interval_seq;
+  int rw;
 };
 
 int test_write(int fd, ort_opt& opt, const io_opt& io_opt);
@@ -55,10 +56,11 @@ int main(int argc, char *argv[])
     .usebase = false,
     .quiet = true,
     .interval_seq = -1,
+    .rw = 1,
   };
   const char* file_path = "/home/darfux/orthrus_test";
   uint32_t account_id = (uint32_t)getpid();
-  while ((opt = getopt (argc, argv, "m:f:l:i:d:r:c:u:s:o:b:q:n:")) != -1)
+  while ((opt = getopt (argc, argv, "m:f:l:i:d:r:c:u:s:o:b:q:n:w:")) != -1)
   {
     switch (opt)
     {
@@ -101,6 +103,9 @@ int main(int argc, char *argv[])
       case 'n':
         io_opt.interval_seq = atoi(optarg);
         break;
+      case 'w':
+        io_opt.rw = atoi(optarg);
+        break;
     }
   }
 
@@ -118,6 +123,7 @@ int main(int argc, char *argv[])
   };
   ort_opt.flags |= ORT_IMPORTANT_DATA;
   ort_opt.flags |= ORT_CFQ;
+  // ort_opt.flags |= ORT_OPT_TEST;
 
   test_write(fd, ort_opt, io_opt);
 
@@ -162,11 +168,13 @@ int test_write(int fd, ort_opt& opt, const io_opt& io_opt)
 
     // printf("writeout to %lld\n", pos*outsize + base);
 
-    if(!io_opt.useort){
-      ret = syscall(346, fd, buffer, outsize, pos*outsize + base, NULL);
-    }else{
-      ret = syscall(346, fd, buffer, outsize, pos*outsize + base, &opt);
-    }
+
+    ort_opt* oopt = io_opt.useort ? &opt : NULL;
+    int syscall_num = io_opt.rw==1 ? 346 : 356;
+
+
+    ret = syscall(syscall_num, fd, buffer, outsize, pos*outsize + base, oopt);
+
     if(ret>0) {
       write_out += ret/1024;
       total_write_out += ret;
