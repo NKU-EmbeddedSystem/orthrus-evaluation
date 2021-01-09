@@ -211,6 +211,7 @@ int test_write(int fd, ort_opt& opt, const io_opt& io_opt)
           interval = std::rand()%(io_opt.interval-50*(io_opt.interval>50)) + 50;
         }
         interval *= 1000;
+        printf("[W] wait\n");
         usleep(interval);
         counter = io_opt.interval_seq;
       }else{
